@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <!--
+      `viewport-fit=cover` is what makes `env(safe-area-inset-*)` resolve to
+      real values instead of 0 on iPhones with a notch / home indicator —
+      without it react-native-safe-area-context reports zero insets on web,
+      and fixed bottom UI (like the tab bar) can end up sitting under the
+      home-indicator gesture bar. We deliberately do NOT add
+      `maximum-scale=1` / `user-scalable=no`: that would disable pinch-zoom
+      for everyone (an accessibility regression) just to paper over the real
+      cause of the "page zooms when you tap a field" bug, which is any
+      <input>/<textarea> rendering below 16px (Mobile Safari auto-zooms to
+      make it legible) — fixed for real below, not by turning zoom off.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover" />
+    <title>%WEB_TITLE%</title>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+    <!--
+      Defensive, mobile-web-only rules. None of this touches the native
+      iOS/Android apps — it only ever runs inside this HTML shell.
+    -->
+    <style id="mobile-web-fixes">
+      /* Safety net: nothing on this site is meant to scroll sideways.
+         React Native's flexbox layout shouldn't produce anything wider
+         than the viewport, but this guarantees a stray element (a long
+         unbroken string, a shadow's blur radius, etc.) can never open up
+         a horizontal scrollbar / drag. */
+      html,
+      body {
+        overflow-x: hidden;
+        max-width: 100%;
+      }
+      #root {
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+      /* iOS Safari bumps a page's font sizes on rotation unless told not
+         to; this keeps our own type scale in control on every orientation. */
+      html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      /* The actual fix for "the page zooms in when I tap a text field":
+         Mobile Safari auto-zooms into any focused <input>/<textarea> whose
+         computed font-size is under 16px. Several fields in this app (the
+         shared Input component, the chat box, textareas, the OTP boxes)
+         intentionally use a smaller design-system type size, so instead of
+         changing that design throughout the app, this bumps only the
+         browser's real hit-testable input font to 16px on phone-sized
+         screens - the visual size everywhere else is unaffected. */
+      @media screen and (max-width: 767px) {
+        input,
+        textarea,
+        select {
+          font-size: 16px !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  </body>
+</html>

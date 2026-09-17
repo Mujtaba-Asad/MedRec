@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "MedRec",
+    "slug": "medrec-patient-app",
+    "scheme": "medrec",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#F7F5F0",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.medrecapp.patient"
+    },
+    "android": {
+      "package": "com.medrecapp.patient",
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F5F0",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F7F5F0",
+          "image": "./assets/brand/logo.png",
+          "imageWidth": 160
+        }
+      ],
+      "@react-native-community/datetimepicker"
+    ]
+  }
+}
