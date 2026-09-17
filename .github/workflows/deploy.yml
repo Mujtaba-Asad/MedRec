@@ -6,7 +6,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'Web App/**'
+      - 'patient-mobile-app/**'
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: 'Web App'
+        working-directory: patient-mobile-app
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
