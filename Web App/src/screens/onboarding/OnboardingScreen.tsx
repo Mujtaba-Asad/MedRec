@@ -22,7 +22,7 @@ export default function OnboardingScreen({ navigation }: Props) {
   const [termsConsent, setTermsConsent] = useState(false);
 
   return (
-    <ScreenContainer scroll={false} padded={false} background={colors.paper}>
+    <ScreenContainer scroll={false} padded={false} background="red">
       <LinearGradient colors={['#EAF6F5', colors.paper]} style={styles.hero}>
         <View style={styles.logoRow}>
           <Image source={require('../../../assets/brand/logo.png')} style={styles.logo} resizeMode="contain" />
