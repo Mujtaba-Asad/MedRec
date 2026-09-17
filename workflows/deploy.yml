@@ -1,0 +1,54 @@
+name: Deploy Patient App to VPS
+
+# Only runs when something under patient-mobile-app/ actually changes, so
+# editing the landing page doesn't trigger a mobile-app deploy and vice versa.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'patient-mobile-app/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: patient-mobile-app
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web export
+        run: npx expo export --platform web
+
+      # Loads the private deploy key (stored as the VPS_SSH_KEY repo secret)
+      # into an SSH agent for this job only — the key never touches disk
+      # unencrypted and isn't printed to the log.
+      - name: Load deploy SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Trust the VPS host key
+        run: ssh-keyscan -H 187.127.121.74 >> ~/.ssh/known_hosts
+
+      # Mirrors the freshly built dist/ folder onto the server, then fixes
+      # ownership/permissions so Nginx (running as www-data) can read it.
+      # --delete removes files on the server that no longer exist locally,
+      # so stale JS bundles from old builds don't pile up.
+      #
+      # Deploy path is /var/www/medrec-patient — this is what the live
+      # Nginx site (patient.medrecapp.com) actually serves.
+      - name: Deploy to VPS
+        run: |
+          rsync -avz --delete dist/ root@187.127.121.74:/var/www/medrec-patient/
+          ssh root@187.127.121.74 "chown -R www-data:www-data /var/www/medrec-patient && chmod -R 755 /var/www/medrec-patient"
