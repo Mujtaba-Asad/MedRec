@@ -51,7 +51,7 @@ export default function RootNavigator() {
   return (
     <Stack.Navigator
       screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
-      initialRouteName={profile.onboardingComplete ? 'MainTabs' : 'Onboarding'}
+      initialRouteName="Onboarding"
     >
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />

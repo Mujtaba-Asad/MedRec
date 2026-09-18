@@ -28,6 +28,7 @@ interface AppContextValue extends AppState {
   completeOnboarding: () => void;
   addFamilyProfile: (p: FamilyProfile) => void;
   addRecord: (r: MedicalRecord) => void;
+  updateRecord: (id: string, patch: Partial<MedicalRecord>) => void;
   removeRecord: (id: string) => void;
   toggleStar: (id: string) => void;
   addMedication: (m: Medication) => void;
@@ -83,6 +84,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       completeOnboarding: () => setState((s) => ({ ...s, profile: { ...s.profile, onboardingComplete: true } })),
       addFamilyProfile: (p) => setState((s) => ({ ...s, familyProfiles: [...s.familyProfiles, p] })),
       addRecord: (r) => setState((s) => ({ ...s, records: [r, ...s.records] })),
+      updateRecord: (id, patch) =>
+        setState((s) => ({ ...s, records: s.records.map((r) => (r.id === id ? { ...r, ...patch } : r)) })),
       removeRecord: (id) => setState((s) => ({ ...s, records: s.records.filter((r) => r.id !== id) })),
       toggleStar: (id) =>
         setState((s) => ({ ...s, records: s.records.map((r) => (r.id === id ? { ...r, starred: !r.starred } : r)) })),

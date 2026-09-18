@@ -54,5 +54,5 @@ const styles = StyleSheet.create({
   },
   focused: { borderColor: colors.teal },
   errorBorder: { borderColor: colors.danger },
-  input: { flex: 1, color: colors.ink, height: '100%' },
+  input: { flex: 1, color: colors.ink, height: '100%', paddingVertical: 0 },
 });

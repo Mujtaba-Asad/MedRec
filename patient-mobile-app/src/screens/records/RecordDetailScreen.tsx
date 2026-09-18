@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ScreenContainer from '../../components/ScreenContainer';
 import Header from '../../components/Header';
@@ -69,10 +69,16 @@ export default function RecordDetailScreen({ navigation, route }: Props) {
           style={{ marginBottom: spacing.lg, flexDirection: 'row', alignItems: 'center', gap: spacing.md }}
           onPress={() => navigation.navigate('ViewRecord', { recordId: record.id })}
         >
-          <IconCircle name="image-outline" />
+          {record.photoUri ? (
+            <Image source={{ uri: record.photoUri }} style={{ width: 44, height: 44, borderRadius: 8 }} />
+          ) : (
+            <IconCircle name="image-outline" />
+          )}
           <View style={{ flex: 1 }}>
             <Text style={[type.bodyMedium, { color: colors.ink }]}>Original Document</Text>
-            <Text style={[type.small, { color: colors.slate }]}>View scanned photo & extracted text</Text>
+            <Text style={[type.small, { color: colors.slate }]}>
+              {record.photoUri ? 'Tap to view captured photo' : 'View scanned photo & extracted text'}
+            </Text>
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.mist} />
         </Card>
@@ -86,9 +92,15 @@ export default function RecordDetailScreen({ navigation, route }: Props) {
           <IconCircle name="mic-outline" bg={colors.successBg} color={colors.success} />
           <View style={{ flex: 1 }}>
             <Text style={[type.bodyMedium, { color: colors.ink }]}>Voice Note</Text>
-            <Text style={[type.small, { color: colors.slate }]}>0:42 — Doctor's follow-up instructions</Text>
+            <Text style={[type.small, { color: colors.slate }]}>
+              {record.voiceNoteUri ? 'Tap to play or re-record' : 'Tap to record a voice note'}
+            </Text>
           </View>
-          <Ionicons name="play-circle-outline" size={26} color={colors.tealDark} />
+          <Ionicons
+            name={record.voiceNoteUri ? 'play-circle-outline' : 'mic-circle-outline'}
+            size={26}
+            color={colors.tealDark}
+          />
         </Card>
       )}
 

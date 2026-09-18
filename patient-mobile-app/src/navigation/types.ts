@@ -11,7 +11,7 @@ export type RootStackParamList = {
 
   // Records
   AddDocument: undefined;
-  ConfirmDetails: { imageCaptured?: boolean } | undefined;
+  ConfirmDetails: { imageCaptured?: boolean; photoUri?: string } | undefined;
   RecordDetail: { recordId: string };
   TypeManually: undefined;
   ViewRecord: { recordId: string };

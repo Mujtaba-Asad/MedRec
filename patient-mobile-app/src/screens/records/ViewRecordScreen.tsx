@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import ScreenContainer from '../../components/ScreenContainer';
 import Header from '../../components/Header';
@@ -22,9 +22,21 @@ export default function ViewRecordScreen({ navigation, route }: Props) {
         title="Original Document"
         transparent
       />
+
+      {/* Photo frame — show real image if available */}
       <View style={styles.photoFrame}>
-        <Ionicons name="document-text-outline" size={72} color="rgba(255,255,255,0.5)" />
-        <Text style={styles.photoLabel}>Scanned photo preview</Text>
+        {record?.photoUri ? (
+          <Image
+            source={{ uri: record.photoUri }}
+            style={styles.photoImage}
+            resizeMode="contain"
+          />
+        ) : (
+          <>
+            <Ionicons name="document-text-outline" size={72} color="rgba(255,255,255,0.5)" />
+            <Text style={styles.photoLabel}>Scanned photo preview</Text>
+          </>
+        )}
       </View>
 
       <Card style={styles.textCard}>
@@ -42,8 +54,17 @@ export default function ViewRecordScreen({ navigation, route }: Props) {
 
 const styles = StyleSheet.create({
   photoFrame: {
-    height: 380, borderRadius: radius.lg, backgroundColor: '#1B2127',
-    alignItems: 'center', justifyContent: 'center', marginBottom: spacing.lg,
+    height: 380,
+    borderRadius: radius.lg,
+    backgroundColor: '#1B2127',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.lg,
+    overflow: 'hidden',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
   },
   photoLabel: { color: 'rgba(255,255,255,0.5)', marginTop: spacing.md, ...type.small },
   textCard: { marginBottom: spacing.xl },

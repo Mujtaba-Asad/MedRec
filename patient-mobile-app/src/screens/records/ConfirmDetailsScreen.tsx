@@ -13,8 +13,9 @@ import type { RootStackParamList } from '../../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ConfirmDetails'>;
 
-export default function ConfirmDetailsScreen({ navigation }: Props) {
+export default function ConfirmDetailsScreen({ navigation, route }: Props) {
   const { addRecord, activeProfileId } = useApp();
+  const photoUri = route.params?.photoUri;
   const [processing, setProcessing] = useState(true);
   const [title, setTitle] = useState('');
   const [provider, setProvider] = useState('');
@@ -36,11 +37,18 @@ export default function ConfirmDetailsScreen({ navigation }: Props) {
       <ScreenContainer scroll={false}>
         <Header onBack={() => navigation.goBack()} title="Reading Document" />
         <View style={styles.processingWrap}>
-          <View style={styles.scanLineTrack}>
-            <View style={styles.docPreview}>
-              <Ionicons name="document-text-outline" size={48} color={colors.mist} />
+          {photoUri ? (
+            <View style={styles.scanLineTrack}>
+              <Image source={{ uri: photoUri }} style={styles.processingImage} resizeMode="cover" />
+              <View style={styles.scanOverlay} />
             </View>
-          </View>
+          ) : (
+            <View style={styles.scanLineTrack}>
+              <View style={styles.docPreview}>
+                <Ionicons name="document-text-outline" size={48} color={colors.mist} />
+              </View>
+            </View>
+          )}
           <Text style={[type.title, { color: colors.ink, marginTop: spacing.xl }]}>Extracting details…</Text>
           <Text style={[type.small, { color: colors.slate, marginTop: spacing.xs, textAlign: 'center' }]}>
             Our on-device OCR is reading the title, provider, and date from your scan.
@@ -54,13 +62,20 @@ export default function ConfirmDetailsScreen({ navigation }: Props) {
     <ScreenContainer>
       <Header onBack={() => navigation.goBack()} title="Confirm Details" />
 
+      {/* Photo thumbnail + success badge */}
       <View style={styles.thumbRow}>
-        <View style={styles.thumb}>
-          <Ionicons name="document-text-outline" size={28} color={colors.tealDark} />
-        </View>
+        {photoUri ? (
+          <Image source={{ uri: photoUri }} style={styles.thumbImage} resizeMode="cover" />
+        ) : (
+          <View style={styles.thumb}>
+            <Ionicons name="document-text-outline" size={28} color={colors.tealDark} />
+          </View>
+        )}
         <View style={{ flex: 1 }}>
           <Text style={[type.smallMedium, { color: colors.success }]}>✓ Text extracted successfully</Text>
-          <Text style={[type.caption, { color: colors.slate }]}>Review the details below before saving</Text>
+          <Text style={[type.caption, { color: colors.slate }]}>
+            {photoUri ? 'Photo attached — review the details below' : 'Review the details below before saving'}
+          </Text>
         </View>
       </View>
 
@@ -85,7 +100,9 @@ export default function ConfirmDetailsScreen({ navigation }: Props) {
             const id = `r${Date.now()}`;
             addRecord({
               id, profileId: activeProfileId, title, category, provider, date,
-              summary: 'Saved from scanned document.', tags: [category], hasPhoto: true,
+              summary: 'Saved from scanned document.', tags: [category],
+              hasPhoto: !!photoUri,
+              photoUri: photoUri ?? undefined,
             });
             navigation.navigate('RecordDetail', { recordId: id });
           }}
@@ -101,8 +118,11 @@ const styles = StyleSheet.create({
   processingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.xxl },
   scanLineTrack: { width: 180, height: 220, borderRadius: radius.lg, backgroundColor: colors.paperDim, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   docPreview: { width: 140, height: 180, borderRadius: radius.md, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border },
+  processingImage: { width: 180, height: 220, borderRadius: radius.lg },
+  scanOverlay: { ...StyleSheet.absoluteFill as object, backgroundColor: 'rgba(45, 166, 178, 0.12)' },
   thumbRow: { flexDirection: 'row', gap: spacing.md, alignItems: 'center', marginBottom: spacing.xl },
   thumb: { width: 56, height: 56, borderRadius: radius.md, backgroundColor: colors.infoBg, alignItems: 'center', justifyContent: 'center' },
+  thumbImage: { width: 56, height: 56, borderRadius: radius.md },
   chipRow: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: { paddingHorizontal: spacing.md, height: 36, borderRadius: radius.pill, justifyContent: 'center', backgroundColor: colors.paperDim, borderWidth: 1, borderColor: colors.border },
   chipActive: { backgroundColor: colors.tealDark, borderColor: colors.tealDark },

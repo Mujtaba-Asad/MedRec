@@ -22,7 +22,9 @@ export interface MedicalRecord {
   summary: string;
   tags: string[];
   hasPhoto: boolean;
+  photoUri?: string;
   hasVoiceNote?: boolean;
+  voiceNoteUri?: string;
   starred?: boolean;
 }
 

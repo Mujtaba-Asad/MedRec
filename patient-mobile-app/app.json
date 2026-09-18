@@ -29,11 +29,30 @@
     },
     "plugins": [
       [
+        "expo-audio",
+        {
+          "microphonePermission": "MedRec needs your microphone to record voice notes for medical records."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "MedRec needs your camera to scan and photograph medical documents.",
+          "photosPermission": "MedRec needs access to your photos to upload medical documents."
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#F7F5F0",
           "image": "./assets/brand/logo.png",
           "imageWidth": 160
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MedRec needs access to your camera to scan medical documents."
         }
       ],
       "@react-native-community/datetimepicker"
