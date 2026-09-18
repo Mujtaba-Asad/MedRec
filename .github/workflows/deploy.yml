@@ -1,7 +1,5 @@
 name: Deploy Patient App to VPS
 
-# Only runs when something under patient-mobile-app/ actually changes, so
-# editing the landing page doesn't trigger a mobile-app deploy and vice versa.
 on:
   push:
     branches: [main]
@@ -30,9 +28,6 @@ jobs:
       - name: Build web export
         run: npx expo export --platform web
 
-      # Loads the private deploy key (stored as the VPS_SSH_KEY repo secret)
-      # into an SSH agent for this job only — the key never touches disk
-      # unencrypted and isn't printed to the log.
       - name: Load deploy SSH key
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -41,14 +36,14 @@ jobs:
       - name: Trust the VPS host key
         run: ssh-keyscan -H 187.127.121.74 >> ~/.ssh/known_hosts
 
-      # Mirrors the freshly built dist/ folder onto the server, then fixes
-      # ownership/permissions so Nginx (running as www-data) can read it.
-      # --delete removes files on the server that no longer exist locally,
-      # so stale JS bundles from old builds don't pile up.
-      #
-      # Deploy path is /var/www/medrec-patient — this is what the live
-      # Nginx site (patient.medrecapp.com) actually serves.
-      - name: Deploy to VPS
-        run: |
-          rsync -avz --delete dist/ root@187.127.121.74:/var/www/medrec-patient/
-          ssh root@187.127.121.74 "chown -R www-data:www-data /var/www/medrec-patient && chmod -R 755 /var/www/medrec-patient"
+      - name: Sync files to VPS
+        run: rsync -avz --delete dist/ root@187.127.121.74:/var/www/medrec-patient/
+
+      - name: DEBUG - diagnose remote shell
+        run: ssh root@187.127.121.74 "echo WHOAMI=\$(whoami); echo SHELL=\$SHELL; echo PATH=\$PATH; which chown; which chmod" 2>&1 | tail -60
+
+      - name: DEBUG - chown only
+        run: ssh root@187.127.121.74 "chown -R www-data:www-data /var/www/medrec-patient"
+
+      - name: DEBUG - chmod only
+        run: ssh root@187.127.121.74 "chmod -R 755 /var/www/medrec-patient"
